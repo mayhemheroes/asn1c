@@ -1,9 +1,10 @@
 name: Mayhem
+
 on:
   push:
   pull_request:
   workflow_dispatch:
-
+  workflow_call:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -11,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: '${{ matrix.os }} shared=${{ matrix.shared }} ${{ matrix.build_type }}'
+    name: ${{ matrix.os }} shared=${{ matrix.shared }} ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -24,7 +25,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -51,7 +51,7 @@ jobs:
         uses: ForAllSecure/mcode-action@v1
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
-          args: --image ${{ steps.meta.outputs.tags }} --file ${{ env.MAYHEMFILE }}
+          args: --image ${{ steps.meta.outputs.tags }} --file ${{ env.MAYHEMFILE }} --duration 300
           sarif-output: sarif
 
       - name: Upload SARIF file(s)
