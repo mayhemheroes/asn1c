@@ -1,16 +1,5 @@
-# Project and target within Mayhem
 project: asn1c
 target: asn1c
 
-duration: 300
-
-# The tasks to perform during a run. 
-tasks:
-  - name: exploitability_factors
-  - name: regression_testing
-  - name: behavior_testing
-  - name: coverage_analysis
-
-# How Mayhem will execute lighttpd.
 cmds:
   - cmd: asn1c @@
