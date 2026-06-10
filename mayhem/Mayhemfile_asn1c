@@ -1,0 +1,15 @@
+project: asn1c
+target: asn1c
+cmds:
+  # Invoke the sanitized asn1c COMPILER ELF directly (Mayhem requires the cmd to be an ELF,
+  # not a bash wrapper). asn1c writes its generated *.c/*.h to the CWD, so we run in /dev/shm
+  # (the only writable location under Mayhem's read-only image mount) and point -S at the baked
+  # skeleton support files. We set NO ASAN_OPTIONS here: a custom Mayhemfile ASAN_OPTIONS
+  # REPLACES Mayhem's full runtime options (abort_on_error=1/symbolize=0/...) and gets the run
+  # rejected. Instead detect_leaks=0 (the only option this compiler needs — it never frees by
+  # design) is baked into the binary via a weak __asan_default_options, which Mayhem's runtime
+  # ASAN_OPTIONS does NOT override.
+  # /mayhem/skeletons is a read-only INPUT dir (asn1c reads skeleton support files from it) —
+  # not a scratch write. # mayhem-lint: ok-image-path
+  - cmd: /mayhem/asn1c-fuzz -S /mayhem/skeletons @@
+    cwd: /dev/shm

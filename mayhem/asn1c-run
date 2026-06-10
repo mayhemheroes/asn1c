@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# asn1c-run — Mayhem file-input wrapper for the whole asn1c COMPILER (target: asn1c).
+#
+# Runs the sanitized compiler (/mayhem/asn1c-fuzz, built by mayhem/build.sh) on a single .asn1
+# source file given as $1. asn1c writes its generated *.c/*.h to the current directory, so we run
+# in a fresh scratch dir; it locates the skeleton support files via -S. We disable LeakSanitizer
+# (the compiler intentionally doesn't free everything before exit — benign end-of-run leaks),
+# while ASan's use-after-free/overflow and the rest of UBSan stay halting.
+set -u
+IN="${1:?usage: asn1c-run <input.asn1>}"
+export ASAN_OPTIONS="${ASAN_OPTIONS:-detect_leaks=0}"
+WD="$(mktemp -d)"
+trap 'rm -rf "$WD"' EXIT
+cd "$WD" || exit 1
+exec /mayhem/asn1c-fuzz -S /mayhem/skeletons "$IN"

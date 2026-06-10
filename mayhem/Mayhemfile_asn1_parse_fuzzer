@@ -1,0 +1,6 @@
+project: asn1c
+target: asn1_parse_fuzzer
+cmds:
+  - cmd: /mayhem/asn1_parse_fuzzer
+    libfuzzer: true
+    dictionary: /mayhem/mayhem/asn1.dict

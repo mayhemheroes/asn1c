@@ -1,0 +1,3 @@
+MinimalModule DEFINITIONS ::= BEGIN
+  MyInt ::= INTEGER
+END
